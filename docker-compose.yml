@@ -1,0 +1,43 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./public:/var/www/html
+      - ./tmp:/tmp
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mariadb
+    networks:
+      - app-network
+
+  php:
+    build: .
+    container_name: php-fpm
+    volumes:
+      - ./public:/var/www/html
+    networks:
+      - app-network
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: mariadb-container
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - ./mariadb_data:/var/lib/mysql  # Menggunakan bind mount untuk menyimpan data ke dalam folder project
+      - ./public/assets/app/db/master.sql:/docker-entrypoint-initdb.d/1-master.sql  # Proses Import Database Default
+      - ./init.sql:/docker-entrypoint-initdb.d/2-init.sql  # Proses allow user@'%'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
