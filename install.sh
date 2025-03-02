@@ -125,7 +125,6 @@ if [ -d "$TARGET_DIR" ]; then
         echo "Folder '$TARGET_DIR' bukan repository git yang valid. Proses dihentikan."
         exit 1
     fi
-    cd ..
 else
     echo "Folder '$TARGET_DIR' tidak ditemukan. Melakukan cloning repository..."
     git clone --depth 1 "$REPO_URL" cbt || { echo "Gagal clone repository."; exit 1; }
