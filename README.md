@@ -5,9 +5,8 @@
 Jalankan perintah berikut di terminal untuk mengunduh dan menjalankan installer:
 
 ```
-wget -O install.sh "https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/install.sh" &&
-sudo chmod +x install.sh &&
-sudo ./install.sh
+wget -O - "https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/install.sh" | bash
+
 ```
 
 Pastikan Anda memiliki koneksi internet yang stabil saat menjalankan perintah ini.
