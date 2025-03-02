@@ -94,10 +94,10 @@ else
 fi
 
 #Get Dockerfile
-wget -c  https://raw.githubusercontent.com/origrata/garudacbt_installer/70f44ae0ed96990d0e0c4470f0ad2e3c8c57bd1c/Dockerfile
+wget -c  https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/Dockerfile
 
 #Get Nginx Default
-wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/70f44ae0ed96990d0e0c4470f0ad2e3c8c57bd1c/default.conf
+wget -c  https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/default.conf
 
 #Get docker-compose.yml
 wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/docker-compose.yml
