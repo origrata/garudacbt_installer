@@ -125,6 +125,7 @@ if [ -d "$TARGET_DIR" ]; then
         echo "Folder '$TARGET_DIR' bukan repository git yang valid. Proses dihentikan."
         exit 1
     fi
+    cd ..
 else
     echo "Folder '$TARGET_DIR' tidak ditemukan. Melakukan cloning repository..."
     git clone --depth 1 "$REPO_URL" cbt || { echo "Gagal clone repository."; exit 1; }
@@ -138,11 +139,15 @@ else
     mv cbt "$TARGET_DIR"
 fi
 
-# Change Kepemilikan directory 
-chown -R www-data:www-data public
-
-# Change Hak Akses
-chmod -R 775 public
+# Pastikan folder public ada sebelum mengubah kepemilikan dan hak akses
+if [ -d "$TARGET_DIR" ]; then
+    echo "Mengatur kepemilikan dan izin folder '$TARGET_DIR'..."
+    chown -R www-data:www-data "$TARGET_DIR"
+    chmod -R 775 "$TARGET_DIR"
+else
+    echo "Error: Folder '$TARGET_DIR' tidak ditemukan setelah proses cloning atau update."
+    exit 1
+fi
 
 echo "Menghasilkan password database..."
 DB_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 8)
