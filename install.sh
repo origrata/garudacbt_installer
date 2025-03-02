@@ -105,36 +105,43 @@ wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/head
 #Get Init.sql
 wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/init.sql
 
+#!/bin/bash
+
 REPO_URL="https://github.com/garudacbt/cbt.git"
 TARGET_DIR="public"
+TEMP_DIR="cbt"
 
 # Periksa apakah folder public sudah ada
 if [ -d "$TARGET_DIR" ]; then
     echo "Folder '$TARGET_DIR' sudah ada."
-       
-    # Tambahkan direktori ke daftar safe directory jika perlu
-    git config --global --add safe.directory $(pwd)
-    
-    # Periksa apakah ini adalah repository git
-    if [ -d ".git" ]; then
+
+    # Pastikan direktori public adalah repository git
+    if [ -d "$TARGET_DIR/.git" ]; then
         echo "Mengambil perubahan terbaru dari repository..."
+        cd "$TARGET_DIR"
         git reset --hard
         git pull || { echo "Gagal melakukan git pull."; exit 1; }
+        cd ..
     else
-        echo "Folder '$TARGET_DIR' bukan repository git yang valid. Proses dihentikan."
-        exit 1
+        echo "Folder '$TARGET_DIR' bukan repository git yang valid. Menggunakan metode clone ulang."
+
+        # Clone ulang ke folder sementara
+        git clone --depth 1 "$REPO_URL" "$TEMP_DIR" || { echo "Gagal clone repository."; exit 1; }
+
+        # Salin isi folder cbt ke folder public
+        rsync -a --delete "$TEMP_DIR/" "$TARGET_DIR/"
+
+        # Hapus folder sementara
+        rm -rf "$TEMP_DIR"
     fi
 else
     echo "Folder '$TARGET_DIR' tidak ditemukan. Melakukan cloning repository..."
-    git clone --depth 1 "$REPO_URL" cbt || { echo "Gagal clone repository."; exit 1; }
     
-    # Hapus folder public jika sudah ada
-    if [ -d "$TARGET_DIR" ]; then
-        rm -rf "$TARGET_DIR"
-    fi
-    
+    # Clone ke folder sementara dulu
+    git clone --depth 1 "$REPO_URL" "$TEMP_DIR" || { echo "Gagal clone repository."; exit 1; }
+
     # Rename folder cbt menjadi public
-    mv cbt "$TARGET_DIR"
+    mv "$TEMP_DIR" "$TARGET_DIR"
 fi
 
 # Pastikan folder public ada sebelum mengubah kepemilikan dan hak akses
@@ -146,6 +153,7 @@ else
     echo "Error: Folder '$TARGET_DIR' tidak ditemukan setelah proses cloning atau update."
     exit 1
 fi
+
 
 echo "Menghasilkan password database..."
 DB_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 8)
