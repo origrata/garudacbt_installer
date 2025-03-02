@@ -155,6 +155,15 @@ sed -i "s/'username' => '.*'/'username' => 'garudacbt'/g" public/application/con
 sed -i "s/'password' => '.*'/'password' => '$DB_PASSWORD'/g" public/application/config/database.php
 sed -i "s/'database' => '.*'/'database' => 'garudacbt'/g" public/application/config/database.php
 
+# Config session folder pada TMP
+sed -i "s/\$config\['sess_save_path'\] = NULL;/\$config\['sess_save_path'\] = '\/tmp';/" public/application/config/config.php
+
+# Merubah ukuran dashboard admin dari 400 ke 150
+sed -i '4s/height: 400px/height: 150px/' public/application/views/dashboard.php
+
+# Merubah ukuran dashboard admin dari 400 ke 150
+sed -i '4s/height: 400px/height: 150px/' public/application/views/members/guru/dashboard.php
+
 # Buat file .env untuk Docker Compose
 echo "Menulis file .env..."
 cat <<EOL > .env
