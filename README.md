@@ -1,4 +1,4 @@
-# GarudaCBT Installer
+# GarudaCBT Installer (Instance/VPS dalam kondisi Kosong)
 
 ## Cara Instalasi
 
