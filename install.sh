@@ -111,8 +111,7 @@ TARGET_DIR="public"
 # Periksa apakah folder public sudah ada
 if [ -d "$TARGET_DIR" ]; then
     echo "Folder '$TARGET_DIR' sudah ada."
-    cd "$TARGET_DIR" || { echo "Gagal masuk ke folder '$TARGET_DIR'"; exit 1; }
-    
+       
     # Tambahkan direktori ke daftar safe directory jika perlu
     git config --global --add safe.directory $(pwd)
     
