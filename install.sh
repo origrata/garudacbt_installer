@@ -93,6 +93,19 @@ else
     echo "Git sudah terinstal."
 fi
 
+
+#Get Dockerfile
+wget -c  https://raw.githubusercontent.com/origrata/garudacbt_installer/70f44ae0ed96990d0e0c4470f0ad2e3c8c57bd1c/Dockerfile
+
+#Get Nginx Default
+wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/70f44ae0ed96990d0e0c4470f0ad2e3c8c57bd1c/default.conf
+
+#Get  docker-compose.yml
+wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/docker-compose.yml
+
+#Get Init.sql
+wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/init.sql
+
 #Proses Cloning Repositiry Garudacbt
 echo "Cloning repository Garuda CBT..."
 git clone --depth 1 https://github.com/garudacbt/cbt.git || { echo "Gagal clone repository."; exit 1; }
