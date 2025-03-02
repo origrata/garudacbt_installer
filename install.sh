@@ -106,23 +106,34 @@ wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/head
 #Get Init.sql
 wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/init.sql
 
-#Proses Cloning Repositiry Garudacbt
-echo "Cloning repository Garuda CBT..."
-git clone --depth 1 https://github.com/garudacbt/cbt.git || { echo "Gagal clone repository."; exit 1; }
+REPO_URL="https://github.com/garudacbt/cbt.git"
+TARGET_DIR="public"
 
-# Konfirmasi sebelum menghapus folder public jika sudah ada
-if [ -d "public" ]; then
-    read -p "Folder 'public' sudah ada. Apakah ingin menghapusnya? (y/n) " confirm
-    if [[ $confirm == "y" || $confirm == "Y" ]]; then
-        rm -rf public
+# Periksa apakah folder public sudah ada
+if [ -d "$TARGET_DIR" ]; then
+    echo "Folder '$TARGET_DIR' sudah ada."
+    cd "$TARGET_DIR" || { echo "Gagal masuk ke folder '$TARGET_DIR'"; exit 1; }
+    
+    # Periksa apakah ini adalah repository git
+    if [ -d ".git" ]; then
+        echo "Mengambil perubahan terbaru dari repository..."
+        git pull || { echo "Gagal melakukan git pull."; exit 1; }
     else
-        echo "Instalasi dibatalkan."
+        echo "Folder '$TARGET_DIR' bukan repository git yang valid. Proses dihentikan."
         exit 1
     fi
+else
+    echo "Folder '$TARGET_DIR' tidak ditemukan. Melakukan cloning repository..."
+    git clone --depth 1 "$REPO_URL" cbt || { echo "Gagal clone repository."; exit 1; }
+    
+    # Hapus folder public jika sudah ada
+    if [ -d "$TARGET_DIR" ]; then
+        rm -rf "$TARGET_DIR"
+    fi
+    
+    # Rename folder cbt menjadi public
+    mv cbt "$TARGET_DIR"
 fi
-
-# Rename folder cbt ke public
-mv cbt public
 
 # Change Kepemilikan directory 
 chown -R www-data:www-data public
