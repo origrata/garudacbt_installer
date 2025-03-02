@@ -93,14 +93,13 @@ else
     echo "Git sudah terinstal."
 fi
 
-
 #Get Dockerfile
 wget -c  https://raw.githubusercontent.com/origrata/garudacbt_installer/70f44ae0ed96990d0e0c4470f0ad2e3c8c57bd1c/Dockerfile
 
 #Get Nginx Default
 wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/70f44ae0ed96990d0e0c4470f0ad2e3c8c57bd1c/default.conf
 
-#Get  docker-compose.yml
+#Get docker-compose.yml
 wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/docker-compose.yml
 
 #Get Init.sql
@@ -114,9 +113,13 @@ if [ -d "$TARGET_DIR" ]; then
     echo "Folder '$TARGET_DIR' sudah ada."
     cd "$TARGET_DIR" || { echo "Gagal masuk ke folder '$TARGET_DIR'"; exit 1; }
     
+    # Tambahkan direktori ke daftar safe directory jika perlu
+    git config --global --add safe.directory $(pwd)
+    
     # Periksa apakah ini adalah repository git
     if [ -d ".git" ]; then
         echo "Mengambil perubahan terbaru dari repository..."
+        git reset --hard
         git pull || { echo "Gagal melakukan git pull."; exit 1; }
     else
         echo "Folder '$TARGET_DIR' bukan repository git yang valid. Proses dihentikan."
@@ -152,15 +155,6 @@ sed -i "s/'username' => '.*'/'username' => 'garudacbt'/g" public/application/con
 sed -i "s/'password' => '.*'/'password' => '$DB_PASSWORD'/g" public/application/config/database.php
 sed -i "s/'database' => '.*'/'database' => 'garudacbt'/g" public/application/config/database.php
 
-# Config session folder pada TMP
-sed -i "s/\$config\['sess_save_path'\] = NULL;/\$config\['sess_save_path'\] = '\/tmp';/" public/application/config/config.php
-
-# Merubah ukuran dashboard admin dari 400 ke 150
-sed -i '4s/height: 400px/height: 150px/' public/application/views/dashboard.php
-
-# Merubah ukuran dashboard admin dari 400 ke 150
-sed -i '4s/height: 400px/height: 150px/' public/application/views/members/guru/dashboard.php
-
 # Buat file .env untuk Docker Compose
 echo "Menulis file .env..."
 cat <<EOL > .env
@@ -171,10 +165,9 @@ MYSQL_PASSWORD=$DB_PASSWORD
 EOL
 
 #Tempat simpan data mariadb docker
-mkdir mariadb_data
+mkdir -p mariadb_data
 
 echo "Proses instalasi garudacbt sedang berlangsung..."
 docker-compose up -d --build
 
-echo "Instalasi Garudacbt Telah selesai. Akses  VPS anda Public IP: http://$(curl -s ifconfig.me)  untuk melanjutkan configurasi identitas Instansi"
-
+echo "Instalasi Garudacbt Telah selesai. Akses VPS anda Public IP: http://$(curl -s ifconfig.me) untuk melanjutkan konfigurasi identitas Instansi"
