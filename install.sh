@@ -12,9 +12,27 @@ else
     exit 1
 fi
 
-# Fungsi untuk menginstal Docker di Ubuntu/Debian
+# Fungsi untuk menginstal Docker di Debian
 install_docker_debian() {
-    echo "Menginstal Docker di Ubuntu/Debian..."
+    echo "Menginstal Docker di Debian..."
+    sudo apt update
+    sudo apt install -y ca-certificates curl gnupg
+
+    # Tambahkan GPG key Docker
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Tambahkan repository Docker untuk Debian
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    sudo apt update
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+}
+
+# Fungsi untuk menginstal Docker di Ubuntu
+install_docker_ubuntu() {
+    echo "Menginstal Docker di Ubuntu..."
     sudo apt update
     sudo apt install -y ca-certificates curl gnupg
 
@@ -23,7 +41,7 @@ install_docker_debian() {
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
     sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-    # Tambahkan repository Docker
+    # Tambahkan repository Docker untuk Ubuntu
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     sudo apt update
@@ -42,15 +60,18 @@ install_docker_rhel() {
 if ! command -v docker &> /dev/null; then
     echo "Docker tidak ditemukan. Menginstal Docker..."
     
-    case "$OS" in
-        ubuntu|debian)
+    case $OS in
+        debian)
             install_docker_debian
             ;;
-        almalinux|centos|rhel)
+        ubuntu)
+            install_docker_ubuntu
+            ;;
+        centos|rhel|almalinux)
             install_docker_rhel
             ;;
         *)
-            echo "Distribusi $OS tidak didukung oleh skrip ini."
+            echo "Sistem operasi $OS tidak didukung."
             exit 1
             ;;
     esac
