@@ -218,4 +218,4 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 echo "Proses instalasi garudacbt sedang berlangsung..."
 docker-compose up -d --build
 
-echo "Instalasi Garudacbt Telah selesai. Akses VPS anda Public IP: http://$(curl -s ifconfig.me) untuk melanjutkan konfigurasi identitas Instansi"
+echo "Instalasi Garudacbt Telah selesai. Akses VPS anda Public IP: https://$(curl -s ifconfig.me) untuk melanjutkan konfigurasi identitas Instansi"
