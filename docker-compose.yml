@@ -9,6 +9,7 @@ services:
       - ./public:/var/www/html
       - ./tmp:/tmp
       - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./cloudflare-ips.conf:/etc/nginx/cloudflare-ips.conf
       - ./ssl:/etc/nginx/ssl  
     depends_on:
       - php
