@@ -126,6 +126,9 @@ wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/head
 #Get Init.sql
 wget -c https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/init.sql
 
+#Get Cloudflare IPV4 And IPV6 Default
+wget -c  https://raw.githubusercontent.com/origrata/garudacbt_installer/refs/heads/main/cloudflare-ips.conf
+
 #!/bin/bash
 
 REPO_URL="https://github.com/garudacbt/cbt.git"
