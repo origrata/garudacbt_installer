@@ -77,10 +77,10 @@ echo "=== Install dan Setup phpMyAdmin ==="
 mkdir -p /var/www/phpmyadmin
 wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zip -O phpmyadmin.zip
 unzip phpmyadmin.zip -d /var/www/
-mv /var/www/phpMyAdmin-*-all-languages/* /var/www/phpmyadmin
+mv /var/www/phpMyAdmin-*-all-languages/* /var/www/dbpanel
 rm -rf /var/www/phpMyAdmin-*-all-languages phpmyadmin.zip
-chown -R www-data:www-data /var/www/phpmyadmin
-chmod -R 755 /var/www/phpmyadmin
+chown -R www-data:www-data /var/www/dbpanel
+chmod -R 755 /var/www/dbpanel
 
 
 echo "=== Membuat SSL Self-Signed untuk Dev ==="
@@ -111,6 +111,7 @@ server {
     location ~ \.php\$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
 
     location ~ /\.ht {
@@ -118,20 +119,10 @@ server {
     }
 
     location /dbpanel {
-        alias /var/www/phpmyadmin/;
-        index index.php index.html index.htm;
-
-        location ~ ^/dbpanel/(.+\.php)\$ {
-            alias /var/www/phpmyadmin/\$1;
-            include snippets/fastcgi-php.conf;
-            fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-        }
-
-        location ~* ^/dbpanel/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
-            alias /var/www/phpmyadmin/\$1;
-        }
+      index index.php index.html index.htm;
+      try_files $uri $uri/ /dbpanel/index.php?$query_string;
     }
-
+    
     gzip on;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 }
