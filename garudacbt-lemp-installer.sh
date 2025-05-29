@@ -145,7 +145,11 @@ sed -i "s/'database' => '.*'/'database' => '$DB_NAME'/" $DB_CONFIG
 echo "=== Import Struktur Database master.sql ==="
 mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" < /var/www/html/assets/app/db/master.sql
 
+echo "=== Proses Install Monitoring Server == "
+bash -c "$(curl -L https://raw.githubusercontent.com/0xJacky/nginx-ui/main/install.sh)" @ install
+
 echo "=== SELESAI! Garuda CBT siap digunakan ==="
 echo "Buka: https://<IP-server-kamu> (SSL Self-Signed)"
 echo "Panel DB: https://<IP-server-kamu>/dbpanel"
+echo "Server Monitor: http://<IP-server-kamu>:9000"
 echo "Cek file database_akses.txt untuk kredensial DB"
