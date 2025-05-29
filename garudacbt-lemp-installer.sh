@@ -2,7 +2,7 @@
 
 echo "=== Instalasi Dependensi Dasar ==="
 apt update
-apt install -y software-properties-common curl lsb-release ca-certificates gnupg2 pwgen git unzip
+apt install -y software-properties-common curl lsb-release ca-certificates gnupg2 pwgen git unzip wget
 
 echo "=== Tambah Repository PHP Ondřej ==="
 add-apt-repository ppa:ondrej/php -y
@@ -73,6 +73,16 @@ git clone https://github.com/garudacbt/cbt.git /var/www/html
 chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html
 
+echo "=== Install dan Setup phpMyAdmin ==="
+mkdir -p /var/www/phpmyadmin
+wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zip -O phpmyadmin.zip
+unzip phpmyadmin.zip -d /var/www/
+mv /var/www/phpMyAdmin-*-all-languages/* /var/www/phpmyadmin
+rm -rf /var/www/phpMyAdmin-*-all-languages phpmyadmin.zip
+chown -R www-data:www-data /var/www/phpmyadmin
+chmod -R 755 /var/www/phpmyadmin
+
+
 echo "=== Membuat SSL Self-Signed untuk Dev ==="
 SSL_DIR="/etc/nginx/ssl"
 mkdir -p $SSL_DIR
@@ -107,6 +117,21 @@ server {
         deny all;
     }
 
+    location /dbpanel {
+        alias /var/www/phpmyadmin/;
+        index index.php index.html index.htm;
+
+        location ~ ^/dbpanel/(.+\.php)\$ {
+            alias /var/www/phpmyadmin/\$1;
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        }
+
+        location ~* ^/dbpanel/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))\$ {
+            alias /var/www/phpmyadmin/\$1;
+        }
+    }
+
     gzip on;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 }
@@ -130,4 +155,5 @@ mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" < /var/www/html/assets/app/db/master.
 
 echo "=== SELESAI! Garuda CBT siap digunakan ==="
 echo "Buka: https://<IP-server-kamu> (SSL Self-Signed)"
+echo "Panel DB: https://<IP-server-kamu>/dbpanel"
 echo "Cek file database_akses.txt untuk kredensial DB"
