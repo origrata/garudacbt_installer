@@ -103,6 +103,8 @@ server {
     index index.php index.html index.htm;
     server_name _;
 
+    error_log /var/log/nginx/garudacbt-error.log warn;
+
     ssl_certificate $SSL_DIR/selfsigned.crt;
     ssl_certificate_key $SSL_DIR/selfsigned.key;
 
@@ -110,7 +112,7 @@ server {
         try_files \$uri \$uri/ /index.php?\$query_string;
     }
 
-    location ~ \.php\$ {
+    location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -121,9 +123,10 @@ server {
     }
 
     location /dbpanel {
-      index index.php index.html index.htm;
-      try_files $uri $uri/ /dbpanel/index.php?$query_string;
+        index index.php index.html index.htm;
+        try_files $uri $uri/ /dbpanel/index.php?$query_string;
     }
+
     
     gzip on;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
@@ -148,6 +151,9 @@ mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" < /var/www/html/assets/app/db/master.
 
 echo "=== Proses Install Monitoring Server == "
 bash -c "$(curl -L https://raw.githubusercontent.com/0xJacky/nginx-ui/main/install.sh)" @ install
+
+echo "=== Update Konfigurasi NGINX LOG ==="
+sed -i 's|^ErrorLogPath[[:space:]]*=.*|ErrorLogPath    = /var/log/nginx/error.log|' /usr/local/etc/nginx-ui/app.ini
 
 echo "=== SELESAI! Garuda CBT siap digunakan ==="
 echo "Buka: https://$(curl -s ifconfig.me) (SSL Self-Signed)"
