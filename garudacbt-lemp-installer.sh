@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "=== Update OS dan Instalasi Dependensi Dasar ==="
+echo "=== Update OS dan Instalasi Dependensi Dasar GarudaCBT ==="
 apt update
 apt install -y software-properties-common curl lsb-release ca-certificates gnupg2 pwgen git unzip wget
 
@@ -38,7 +38,27 @@ sed -i "s/worker_processes .*/worker_processes $CPU;/" $NGINX_CONF
 sed -i "s/# multi_accept on;/multi_accept on;/" $NGINX_CONF
 sed -i "s/# use epoll;/use epoll;/" $NGINX_CONF
 
+echo "=== Add Repository MARIADB 11.8 ==="
+apt-get install apt-transport-https curl -y
+mkdir -p /etc/apt/keyrings
+curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
+
+cat > /etc/apt/sources.list.d/mariadb.sources <<EOF
+# MariaDB 11.8 repository list - created 2025-05-30 03:30 UTC
+# https://mariadb.org/download/
+X-Repolib-Name: MariaDB
+Types: deb
+# deb.mariadb.org is a dynamic mirror if your preferred mirror goes offline. See https://mariadb.org/mirrorbits/ for details.
+# URIs: https://deb.mariadb.org/11.rc/ubuntu
+URIs: https://sg-mirrors.vhost.vn/mariadb/repo/11.8/ubuntu
+Suites: noble
+Components: main main/debug
+Signed-By: /etc/apt/keyrings/mariadb-keyring.pgp
+EOF
+
+
 echo "=== Instalasi MariaDB dan Konfigurasi Awal ==="
+apt-get update -y
 DEBIAN_FRONTEND=noninteractive apt install -y mariadb-server
 systemctl enable --now mariadb
 
