@@ -150,7 +150,7 @@ echo "=== Proses Install Monitoring Server == "
 bash -c "$(curl -L https://raw.githubusercontent.com/0xJacky/nginx-ui/main/install.sh)" @ install
 
 echo "=== SELESAI! Garuda CBT siap digunakan ==="
-echo "Buka: https://<IP-server-kamu> (SSL Self-Signed)"
-echo "Panel DB: https://<IP-server-kamu>/dbpanel"
-echo "Server Monitor: http://<IP-server-kamu>:9000"
+echo "Buka: https://$(curl -s ifconfig.me) (SSL Self-Signed)"
+echo "Panel DB: https://$(curl -s ifconfig.me)/dbpanel"
+echo "Server Monitor: http://$(curl -s ifconfig.me):9000"
 echo "Cek file database_akses.txt untuk kredensial DB"
