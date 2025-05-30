@@ -2,7 +2,6 @@
 
 echo "=== Update OS dan Instalasi Dependensi Dasar ==="
 apt update
-apt upgrade -y
 apt install -y software-properties-common curl lsb-release ca-certificates gnupg2 pwgen git unzip wget
 
 echo "=== Tambah Repository PHP Ondřej ==="
