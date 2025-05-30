@@ -78,10 +78,11 @@ echo "=== Install dan Setup phpMyAdmin ==="
 mkdir -p /var/www/phpmyadmin
 wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zip -O phpmyadmin.zip
 unzip phpmyadmin.zip -d /var/www/
-mv /var/www/phpMyAdmin-*-all-languages/* /var/www/dbpanel
+mv /var/www/phpMyAdmin-*-all-languages/* /var/www/html/dbpanel
 rm -rf /var/www/phpMyAdmin-*-all-languages phpmyadmin.zip
-chown -R www-data:www-data /var/www/dbpanel
-chmod -R 755 /var/www/dbpanel
+mv /var/www/html/dbpanel/config.sample.inc.php /var/www/html/dbpanel/config.inc.php
+chown -R www-data:www-data /var/www/html/dbpanel
+chmod -R 755 /var/www/html/dbpanel
 
 
 echo "=== Membuat SSL Self-Signed untuk Dev ==="
