@@ -67,8 +67,8 @@ DB_USER="garuda_$(tr -dc a-z0-9 </dev/urandom | head -c 4)"
 DB_PASS=$(pwgen -s 12 1)
 ROOT_PASS=$(pwgen -s 16 1)
 
-mariadb -e "UPDATE mysql.user SET Password=PASSWORD('$ROOT_PASS') WHERE User='root';"
-mariadb -e "FLUSH PRIVILEGES;"
+mariadb -uroot -p"$ROOT_PASS" -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('$ROOT_PASS') WITH GRANT OPTION;"
+mariadb -uroot -p"$ROOT_PASS" -e "FLUSH PRIVILEGES;"
 mariadb -uroot -p"$ROOT_PASS" -e "CREATE DATABASE \`$DB_NAME\`;"
 mariadb -uroot -p"$ROOT_PASS" -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
 mariadb -uroot -p"$ROOT_PASS" -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_USER'@'localhost';"
