@@ -67,12 +67,12 @@ DB_USER="garuda_$(tr -dc a-z0-9 </dev/urandom | head -c 4)"
 DB_PASS=$(pwgen -s 12 1)
 ROOT_PASS=$(pwgen -s 16 1)
 
-mysql -e "UPDATE mysql.user SET Password=PASSWORD('$ROOT_PASS') WHERE User='root';"
-mysql -e "FLUSH PRIVILEGES;"
-mysql -uroot -p"$ROOT_PASS" -e "CREATE DATABASE \`$DB_NAME\`;"
-mysql -uroot -p"$ROOT_PASS" -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
-mysql -uroot -p"$ROOT_PASS" -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_USER'@'localhost';"
-mysql -uroot -p"$ROOT_PASS" -e "FLUSH PRIVILEGES;"
+mariadb -e "UPDATE mysql.user SET Password=PASSWORD('$ROOT_PASS') WHERE User='root';"
+mariadb -e "FLUSH PRIVILEGES;"
+mariadb -uroot -p"$ROOT_PASS" -e "CREATE DATABASE \`$DB_NAME\`;"
+mariadb -uroot -p"$ROOT_PASS" -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+mariadb -uroot -p"$ROOT_PASS" -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_USER'@'localhost';"
+mariadb -uroot -p"$ROOT_PASS" -e "FLUSH PRIVILEGES;"
 
 echo "=== Simpan Informasi Akses Database ==="
 cat > database_akses.txt <<EOF
@@ -94,7 +94,7 @@ chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html
 
 echo "=== Install dan Setup phpMyAdmin ==="
-mkdir -p /var/www/phpmyadmin
+mkdir -p /var/www/html/dbpanel
 wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zip -O phpmyadmin.zip
 unzip phpmyadmin.zip -d /var/www/
 mv /var/www/phpMyAdmin-*-all-languages/* /var/www/html/dbpanel
@@ -134,7 +134,7 @@ server {
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
     }
 
     location ~ /\.ht {
@@ -143,7 +143,7 @@ server {
 
     location /dbpanel {
         index index.php index.html index.htm;
-        try_files $uri $uri/ /dbpanel/index.php?$query_string;
+        try_files \$uri \$uri/ /dbpanel/index.php?$query_string;
     }
 
     
@@ -173,6 +173,7 @@ bash -c "$(curl -L https://raw.githubusercontent.com/0xJacky/nginx-ui/main/insta
 
 echo "=== Update Konfigurasi NGINX LOG ==="
 sed -i 's|^ErrorLogPath[[:space:]]*=.*|ErrorLogPath    = /var/log/nginx/error.log|' /usr/local/etc/nginx-ui/app.ini
+systemctl restart nginx-ui
 
 echo "=== SELESAI! Garuda CBT siap digunakan ==="
 echo "Buka: https://$(curl -s ifconfig.me) (SSL Self-Signed)"
