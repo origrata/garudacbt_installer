@@ -18,6 +18,9 @@ echo "=== Instalasi dan Konfigurasi Nginx ==="
 apt install -y nginx
 systemctl enable --now nginx
 
+echo "=== Instalasi mkpasswd dengan whois ==="
+apt install -y whois
+
 echo "=== Deteksi RAM dan CPU ==="
 RAM_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 RAM=$(awk -v ram_kb="$RAM_KB" 'BEGIN {ram=int(ram_kb/1024/1024); print (ram < 1) ? 1 : ram}')
